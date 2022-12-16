@@ -54,13 +54,13 @@ def create_users():
     return jsonify({'users' : users})
 
 
-@app.route("/", defaults={"path": ""})
-@app.route("/<string:path>")
-def index(path):
-    try:
-        return app.send_static_file(path)
-    except:
-        return app.send_static_file("index.html")
+# @app.route("/", defaults={"path": ""})
+# @app.route("/<string:path>")
+# def index(path):
+#     try:
+#         return app.send_static_file(path)
+#     except:
+#         return app.send_static_file("index.html")
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
