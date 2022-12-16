@@ -1,53 +1,66 @@
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_restful import Api
 from dotenv import load_dotenv
 import os
 import psycopg2
 
-
-
-app = Flask(__name__)
+app = Flask(__name__, static_folder="./build", static_url_path="/")
 cors = CORS(app)
 api = Api(app)
-
 load_dotenv()
 
 database_name = os.getenv("DATABASE")
 database_username = os.getenv("DATABASE_USERNAME")
 database_password = os.getenv("DATABASE_PASSWORD")
+headers = {
+    "Accept" : "application/json"
+}
 
-@app.route('/profile')
-def my_profile():
-    data = {
-        "name": "Elijah",
-        "about" :"Hello! I'm a full stack developer that loves python and javascript"
+messages = [{'user' : 'testUser1',
+             'message' : 'test message 1'},
+             {'user' : 'testUser2',
+             'message' : 'test message 2'},
+             {'user' : 'testUser3',
+             'message' : 'test message 3'},
+             {'user' : 'testUser4',
+             'message' : 'test message 4'},]
+
+users = [{'user' : 'Brauner'}, {'user' : 'Some User'}, {'user': 'Some other user'}]
+
+@app.route("/app/messages", methods=["GET"])
+def get_messages():
+    return jsonify({'messages' : messages})
+
+@app.route("/app/messages", methods=["POST"])
+def create_messages(): 
+    message = {
+        'user' : request.json['user'],
+        'message' : request.json['message']
     }
+    messages.append(message)
+    return jsonify({'messages' : messages})
 
-    return data
+@app.route("/app/users", methods=["GET"])
+def get_users():
+    return jsonify({"users" : users})
+
+@app.route("/app/users", methods=["POST"])
+def create_users():
+    new_user = {
+        "user" : request.json["user"],
+    }
+    users.append(new_user)
+    return jsonify({'users' : users})
 
 
-conn = psycopg2.connect(
-    host="localhost",
-    database = database_name,
-    user = database_username,
-    password= database_password
-)
-
-cursor = conn.cursor()
-
-cursor.execute("DROP TABLE IF EXISTS chats")
-cursor.execute('CREATE TABLE chats (id serial PRIMARY KEY,'
-                                 'message varchar (150) NOT NULL,'
-                                 'username varchar (50) NOT NULL,'
-                                 'pages_num integer NOT NULL,'
-                                 'review text,'
-                                 'date_added date DEFAULT CURRENT_TIMESTAMP);'
-                                 )
-
-conn.commit()
-cursor.close()
-conn.close()
+# @app.route("/", defaults={"path": ""})
+# @app.route("/<string:path>")
+# def index(path):
+#     try:
+#         return app.send_static_file(path)
+#     except:
+#         return app.send_static_file("index.html")
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)

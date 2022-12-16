@@ -1,27 +1,24 @@
 import "./ChatWindow.css";
-// import { Container } from "react-bootstrap";
+import { Container, Card } from "react-bootstrap";
 import ChatTitle from "./ChatWindow_components/ChatTitle/ChatTitle";
 import ChatBody from "./ChatWindow_components/ChatBody/ChatBody";
 import ChatInput from "./ChatWindow_components/ChatInput/ChatInput";
-import { Card } from "react-bootstrap";
 
 const ChatWindow = () => {
     return (
-        <div className="chatwindow-container">
-            <Card style={{ height: "600px" }}>
+        <Container className="chatwindow-container">
+            <Card>
                 <Card.Body>
                     <Card.Header>
                         <ChatTitle />
                     </Card.Header>
-                    <Card.Text style={{ height: "400px" }}>
+                    <Card.Text className="chat-body">
                         <ChatBody />
-                    </Card.Text>
-                    <Card.Footer>
                         <ChatInput />
-                    </Card.Footer>
+                    </Card.Text>
                 </Card.Body>
             </Card>
-        </div>
+        </Container>
     );
 };
 

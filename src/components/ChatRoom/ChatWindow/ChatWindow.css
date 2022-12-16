@@ -1,6 +1,29 @@
+/* .chatroom-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.chat-users-container {
+    padding-top: 40px;
+    margin-left: 100px;
+    padding-left: 40px;
+    width: 400px;
+    padding-right: 10px;
+}
+
 .chatwindow-container {
     padding-top: 40px;
     height: 600px;
-    margin-left: auto;
+    max-height: 100%;
     margin-right: auto;
+    width: 60%;
+} */
+
+/* .input-field {
+    border: 2px solid salmon;
+    height: 50px;
+} */
+
+.chat-body {
+    padding-bottom: 10px;
 }

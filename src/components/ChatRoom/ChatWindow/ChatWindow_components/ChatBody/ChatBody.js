@@ -1,3 +1,4 @@
+import "./ChatBody.css";
 const ChatBody = () => {
     return (
         <div className="chatroom-content-container">
