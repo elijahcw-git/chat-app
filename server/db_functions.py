@@ -10,5 +10,5 @@ def get_messages():
 def get_message(id):
     print("get message id")
 
-def create_message():
+def create_message(user, text):
     print("create message")
