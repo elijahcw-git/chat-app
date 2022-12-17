@@ -4,6 +4,7 @@ from flask_restful import Api
 from dotenv import load_dotenv
 import os
 import psycopg2
+import db_functions
 
 app = Flask(__name__, static_folder="./build", static_url_path="/")
 cors = CORS(app)
@@ -54,13 +55,13 @@ def create_users():
     return jsonify({'users' : users})
 
 
-# @app.route("/", defaults={"path": ""})
-# @app.route("/<string:path>")
-# def index(path):
-#     try:
-#         return app.send_static_file(path)
-#     except:
-#         return app.send_static_file("index.html")
+@app.route("/", defaults={"path": ""})
+@app.route("/<string:path>")
+def index(path):
+    try:
+        return app.send_static_file(path)
+    except:
+        return app.send_static_file("index.html")
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)
