@@ -18,33 +18,16 @@ headers = {
     "Accept" : "application/json"
 }
 
-messages = [{'user' : 'testUser1',
-             'message' : 'test message 1'},
-             {'user' : 'testUser2',
-             'message' : 'test message 2'},
-             {'user' : 'testUser3',
-             'message' : 'test message 3'},
-             {'user' : 'testUser4',
-             'message' : 'test message 4'},]
-
-users = [{'user' : 'Brauner'}, {'user' : 'Some User'}, {'user': 'Some other user'}]
-
-@app.route("/app/messages", methods=["GET"])
-def get_messages():
-    return jsonify({'messages' : messages})
-
-@app.route("/app/messages", methods=["POST"])
-def create_messages(): 
-    message = {
-        'user' : request.json['user'],
-        'message' : request.json['message']
-    }
-    messages.append(message)
-    return jsonify({'messages' : messages})
-
-@app.route("/app/users", methods=["GET"])
-def get_users():
-    return jsonify({"users" : users})
+@app.route("/app/login", methods=["POST"])
+def login():
+    user = request.get_json()
+    username = user['username']
+    password = user['password']
+    database.user_login(username, password)
+    
+    print(username, password)
+    return user
+    
 
 @app.route("/app/users", methods=["POST"])
 def create_users():
@@ -52,7 +35,6 @@ def create_users():
     username = new_user['username']
     email = new_user['userEmail']
     password = new_user['userPassword']
-
     database.create_new_user(username, email, password)
     print(dir(new_user))
     return new_user, 200
