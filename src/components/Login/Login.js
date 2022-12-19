@@ -1,10 +1,28 @@
 import React from "react";
 import "./Login.css";
+import { Button } from "react-bootstrap";
 
-const LoginForm = () => {
+const LoginForm = ({ isLoggedIn, setIsLoggedIn }) => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(e);
+        !isLoggedIn ? setIsLoggedIn(true) : setIsLoggedIn(false);
+        console.log(isLoggedIn);
+    };
+
+    const logIn = (e) => {
+        e.preventDefault();
+        setIsLoggedIn(true);
+    };
+
+    const logOut = (e) => {
+        e.preventDefault();
+        setIsLoggedIn(false);
+    };
+
     return (
         <div className="Auth-form-container">
-            <form className="Auth-form">
+            <form className="Auth-form" onSubmit={handleSubmit}>
                 <div className="Auth-form-content">
                     <h3 className="Auth-form-title">Sign In</h3>
                     <div className="form-group mt-3">
@@ -24,13 +42,12 @@ const LoginForm = () => {
                         />
                     </div>
                     <div className="d-grid gap-2 mt-3">
-                        <button type="submit" className="btn btn-primary">
-                            Submit
-                        </button>
+                        {isLoggedIn ? (
+                            <Button onClick={logOut}>Logout</Button>
+                        ) : (
+                            <Button onClick={logIn}>Login</Button>
+                        )}
                     </div>
-                    <p className="forgot-password text-right mt-2">
-                        Forgot <a href="#">password?</a>
-                    </p>
                 </div>
             </form>
         </div>

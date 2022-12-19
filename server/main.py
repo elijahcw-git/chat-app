@@ -4,7 +4,7 @@ from flask_restful import Api
 from dotenv import load_dotenv
 import os
 import psycopg2
-import db_functions
+import db_functions as database
 
 app = Flask(__name__, static_folder="./build", static_url_path="/")
 cors = CORS(app)
@@ -48,12 +48,14 @@ def get_users():
 
 @app.route("/app/users", methods=["POST"])
 def create_users():
-    new_user = {
-        "user" : request.json["user"],
-    }
-    users.append(new_user)
-    return jsonify({'users' : users})
+    new_user = request.get_json()
+    username = new_user['username']
+    email = new_user['userEmail']
+    password = new_user['userPassword']
 
+    database.create_new_user(username, email, password)
+    print(dir(new_user))
+    return new_user, 200
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<string:path>")
