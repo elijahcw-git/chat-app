@@ -23,11 +23,8 @@ def login():
     user = request.get_json()
     username = user['username']
     password = user['password']
-    database.user_login(username, password)
-    
-    print(username, password)
-    return user
-    
+    result = database.user_login(username, password)
+    return result
 
 @app.route("/app/users", methods=["POST"])
 def create_users():
@@ -36,8 +33,30 @@ def create_users():
     email = new_user['userEmail']
     password = new_user['userPassword']
     database.create_new_user(username, email, password)
-    print(dir(new_user))
     return new_user, 200
+
+@app.route("/app/users", methods=["GET"])
+def get_users():
+    all_users = database.get_all_users()
+    # return jsonify({"users" : users})
+    return jsonify(all_users)
+
+
+
+
+@app.route("/app/messages", methods=["GET"])
+def get_messages():
+    return jsonify()
+
+@app.route("/app/messages", methods=["POST"])
+def create_messages(): 
+    message = {
+        'user' : request.json['user'],
+        'message' : request.json['message']
+    }
+    
+    return jsonify()
+
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<string:path>")

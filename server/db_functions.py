@@ -1,4 +1,5 @@
 import psycopg2
+from flask import jsonify
 
 conn = psycopg2.connect(
     host=  "localhost",
@@ -9,28 +10,23 @@ conn = psycopg2.connect(
 )
 
 
-# def get_users():
-#     cursor = conn.cursor()
-#     cursor.execute("select * from users")
-#     conn.commit()
-#     cursor.close()
-#     conn.close()
+def get_all_users():
+    cursor = conn.cursor()
+    cursor.execute("select * from users")
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def user_login(username, password):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE username=(%s) AND password=(%s)", (username, password))
-
     result = cursor.fetchone()
     conn.commit()
     cursor.close()
     if result == None:
-        return "No userfound", 403
+        return jsonify({'error' : 'Unauthorized'}), 403
     else:
-        return "user found", 200
-
-    
-    # return result
-   
+       return jsonify({'success' : 'Log in successful'}), 200
 
 
 def create_new_user(username, email, password):
@@ -41,16 +37,18 @@ def create_new_user(username, email, password):
     cursor.close()
     
 
-
-
 # def get_messages():
 #     print("get messages")
 
 # def get_message(id):
 #     print("get message id")
 
-# def create_message(user, text):
-#     print("create message")
+def create_message(user, text):
+    print("create message")
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO messages (username, messagetext) values (%s, %s,)", (user, text,))
+    conn.commit()
+    cursor.close()
 
 
 # messages = [{'user' : 'testUser1',
