@@ -14,6 +14,7 @@ load_dotenv()
 database_name = os.getenv("DATABASE")
 database_username = os.getenv("DATABASE_USERNAME")
 database_password = os.getenv("DATABASE_PASSWORD")
+database_password = os.getenv("DATABASE_PASSWORD")
 headers = {
     "Accept" : "application/json"
 }
