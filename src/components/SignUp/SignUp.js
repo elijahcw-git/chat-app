@@ -3,19 +3,17 @@ import axios from "axios";
 
 const SignUp = () => {
     const [userName, setUserName] = useState("");
-    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const userInfo = {
         username: userName,
-        userEmail: email,
         userPassword: password,
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         axios
-            .post("/app/users", userInfo)
+            .post("/app/user", userInfo)
             .then((res) => {
                 console.log(res);
             })
@@ -36,14 +34,6 @@ const SignUp = () => {
                             className="form-control mt-1"
                             placeholder="UserName"
                             onChange={(e) => setUserName(e.target.value)}
-                            required
-                        />
-                        <label>Email address</label>
-                        <input
-                            type="email"
-                            className="form-control mt-1"
-                            placeholder="Enter email"
-                            onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>

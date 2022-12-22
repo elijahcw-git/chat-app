@@ -33,3 +33,13 @@ label {
     font-weight: 600;
     color: rgb(34, 34, 34);
 }
+
+.bad-login {
+    margin-top: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid red;
+    background: rgb(250, 151, 151);
+    text-align: center;
+    width: 80%;
+}

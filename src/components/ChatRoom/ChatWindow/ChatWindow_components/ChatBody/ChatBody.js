@@ -1,10 +1,6 @@
 import "./ChatBody.css";
 const ChatBody = () => {
-    return (
-        <div className="chatroom-content-container">
-            Lorem Ipsum Odor asdklfhjal;sdhflahsdfkljahsdflkajhsdfklajhsdfkjhas
-        </div>
-    );
+    return <div className="chatroom-content-container">-Messages-</div>;
 };
 
 export default ChatBody;

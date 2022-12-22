@@ -99,7 +99,7 @@ def create_user():
     return jsonify({'message' : 'User Created Successfully'})
 
 
-@app.route('/app/login')
+@app.route('/app/login', methods=['POST'])
 def login():
     auth = request.authorization
     print(auth)
@@ -108,7 +108,6 @@ def login():
         return make_response('Incomplete login information', 403, {'WWW-Authenticate' : 'Basic realm="Login required'})
 
     user = User.query.filter_by(username=auth.username).first()
-
 
     if not user:
          return make_response('Incomplete login information', 403, {'WWW-Authenticate' : 'Basic realm="Login required'})

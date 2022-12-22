@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import "./Login.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
@@ -6,23 +7,8 @@ import axios from "axios";
 const LoginForm = ({ isLoggedIn, setIsLoggedIn }) => {
     const [loginUserName, setLoginUserName] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
-
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     console.log(e);
-    //     !isLoggedIn ? setIsLoggedIn(true) : setIsLoggedIn(false);
-    //     console.log(isLoggedIn);
-    // };
-
-    // const logIn = (e) => {
-    //     e.preventDefault();
-    //     setIsLoggedIn(true);
-    // };
-
-    // const logOut = (e) => {
-    //     e.preventDefault();
-    //     setIsLoggedIn(false);
-    // };
+    const [loginAttempt, setLoginAttempt] = useState(false);
+    const navigate = useNavigate();
 
     const loginInfo = {
         username: loginUserName,
@@ -36,9 +22,19 @@ const LoginForm = ({ isLoggedIn, setIsLoggedIn }) => {
             .post("/app/login", loginInfo)
             .then((res) => {
                 console.log(res);
+                if (res.status === 200) {
+                    setIsLoggedIn(true);
+                    setLoginAttempt(false);
+                    navigate("../ChatRoom");
+                }
             })
             .catch((error) => {
-                console.log(error);
+                if (error.response.status === 403) {
+                    setIsLoggedIn(false);
+                    setLoginAttempt(true);
+                } else {
+                    console.log(error);
+                }
             });
     };
 
@@ -56,6 +52,8 @@ const LoginForm = ({ isLoggedIn, setIsLoggedIn }) => {
                             onChange={(e) => {
                                 setLoginUserName(e.target.value);
                             }}
+                            required
+                            autoComplete="off"
                         />
                     </div>
                     <div className="form-group mt-3">
@@ -67,12 +65,20 @@ const LoginForm = ({ isLoggedIn, setIsLoggedIn }) => {
                             onChange={(e) => {
                                 setLoginPassword(e.target.value);
                             }}
+                            required
                         />
                     </div>
                     <div className="d-grid gap-2 mt-3">
                         <Button type="submit">Login</Button>
                     </div>
                 </div>
+                {loginAttempt ? (
+                    <p className="bad-login">
+                        Invalid credentials, please try again
+                    </p>
+                ) : (
+                    <></>
+                )}
             </form>
         </div>
     );

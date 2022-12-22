@@ -1,7 +1,22 @@
 import "./ChatInput.css";
 import { Form, Button, Row, Col } from "react-bootstrap";
+import { useState } from "react";
+import axios from "axios";
 
 const ChatInput = () => {
+    const [newMessage, setNewMessage] = useState("");
+
+    const messageData = {
+        messagetext: newMessage,
+    };
+
+    const sendMessage = (e) => {
+        e.preventDefault();
+        axios.post("/app/messages", messageData).then((res) => {
+            console.log(res);
+        });
+    };
+
     return (
         <div className="chat-input-container">
             <Row>
@@ -10,10 +25,15 @@ const ChatInput = () => {
                         size="lg"
                         type="text"
                         placeholder="Enter your message here"
+                        onChange={(e) => setNewMessage(e.target.value)}
                     ></Form.Control>
                 </Col>
                 <Col md={2}>
-                    <Button size="lg" style={{ width: "100%" }}>
+                    <Button
+                        size="lg"
+                        onClick={sendMessage}
+                        style={{ width: "100%" }}
+                    >
                         Send
                     </Button>
                 </Col>
