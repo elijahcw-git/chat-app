@@ -3,7 +3,7 @@ import ChatNavbar from "./components/Navbar/Navbar";
 import LoginForm from "./components/Login/Login";
 import SignUp from "./components/SignUp/SignUp";
 import { Routes, Route } from "react-router-dom";
-import LandingPage from "./components/LandingPage/LandingPage";
+// import LandingPage from "./components/LandingPage/LandingPage";
 import Error from "./components/ErrorHandler/404";
 import ChatRoom from "./components/ChatRoom/ChatRoom";
 import Protected from "./components/Protected";
@@ -11,6 +11,7 @@ import { useState } from "react";
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userId, setUserId] = useState("");
 
     return (
         <div className="App">
@@ -23,6 +24,8 @@ function App() {
                         <LoginForm
                             isLoggedIn={isLoggedIn}
                             setIsLoggedIn={setIsLoggedIn}
+                            userId={userId}
+                            setUserId={setUserId}
                         />
                     }
                 />
@@ -31,7 +34,7 @@ function App() {
                     path="/Chatroom"
                     element={
                         <Protected isLoggedIn={isLoggedIn}>
-                            <ChatRoom />
+                            <ChatRoom userId={userId} />
                         </Protected>
                     }
                 />

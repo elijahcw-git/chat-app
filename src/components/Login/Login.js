@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { Button } from "react-bootstrap";
 import axios from "axios";
 
-const LoginForm = ({ isLoggedIn, setIsLoggedIn }) => {
+const LoginForm = ({ isLoggedIn, setIsLoggedIn, userId, setUserId }) => {
     const [loginUserName, setLoginUserName] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [loginAttempt, setLoginAttempt] = useState(false);
@@ -21,9 +21,10 @@ const LoginForm = ({ isLoggedIn, setIsLoggedIn }) => {
         axios
             .post("/app/login", loginInfo)
             .then((res) => {
-                console.log(res);
                 if (res.status === 200) {
+                    localStorage.setItem("jwt", res.data.token);
                     setIsLoggedIn(true);
+                    setUserId(res.data.id);
                     setLoginAttempt(false);
                     navigate("../ChatRoom");
                 }

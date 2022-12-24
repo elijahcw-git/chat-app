@@ -3,17 +3,25 @@ import { Form, Button, Row, Col } from "react-bootstrap";
 import { useState } from "react";
 import axios from "axios";
 
-const ChatInput = () => {
+const ChatInput = ({ userId }) => {
     const [newMessage, setNewMessage] = useState("");
 
     const messageData = {
+        user: userId,
         messagetext: newMessage,
     };
 
     const sendMessage = (e) => {
         e.preventDefault();
-        axios.post("/app/messages", messageData).then((res) => {
+        const config = {
+            headers: {
+                Authorization: localStorage.getItem("jwt"),
+            },
+        };
+
+        axios.post("/app/message", messageData, config).then((res) => {
             console.log(res);
+            setNewMessage("");
         });
     };
 
@@ -26,6 +34,7 @@ const ChatInput = () => {
                         type="text"
                         placeholder="Enter your message here"
                         onChange={(e) => setNewMessage(e.target.value)}
+                        value={newMessage}
                     ></Form.Control>
                 </Col>
                 <Col md={2}>

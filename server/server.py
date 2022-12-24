@@ -76,7 +76,6 @@ def token_required(f):
 
 @app.route('/user/<id>', methods=['GET'])
 def get_user(id):
-
     user = User.query.filter_by(id=id).first()
 
     if not user:
@@ -93,28 +92,35 @@ def create_user():
     data = request.get_json()
     hashed_password = generate_password_hash(data['userPassword'], method='sha256')
     new_user = User(username=data['username'], password=hashed_password)
+    username_taken = db.session.query(User).filter_by(username=data['username']).scalar() is not None
+    # if username_taken == True:
+    #     print(username_taken)
+    # else:
+    #     print("False")
     db.session.add(new_user)
     db.session.commit()
-
-    return jsonify({'message' : 'User Created Successfully'})
-
+    return jsonify({'message' : 'User Created Successfully'}),200
 
 @app.route('/app/login', methods=['POST'])
 def login():
-    auth = request.authorization
-    print(auth)
-    
-    if not auth or not auth.username or not auth.password:
-        return make_response('Incomplete login information', 403, {'WWW-Authenticate' : 'Basic realm="Login required'})
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
 
-    user = User.query.filter_by(username=auth.username).first()
+    user = User.query.filter_by(username=username).first()
+    print(user.id)
 
     if not user:
          return make_response('Incomplete login information', 403, {'WWW-Authenticate' : 'Basic realm="Login required'})
 
-    if check_password_hash(user.password, auth.password):
+    if check_password_hash(user.password, password):
         token = jwt.encode({'id' : user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=2)}, app.config['SECRET_KEY'])
-        return jsonify({'token' : token.decode('UTF-8')})
+        id = user.id
+        response = {
+            'token' : token,
+            'id' : id
+        }
+        return jsonify(response), 200
 
     return make_response('Incomplete login information', 403, {'WWW-Authenticate' : 'Basic realm="Login required'}) 
 
@@ -135,17 +141,21 @@ def get_all_users():
     return jsonify({'users' : output})
 
 
+@app.route('/app/message', methods=['POST'])
+# @token_required
+def create_message():
 
-@app.route('/message', methods=['POST'])
-@token_required
-def create_message(current_user):
+    jwt = request.headers.get('Authorization')
+    print(jwt)
+    # Check if jwt is valid
     data = request.get_json()
 
-    new_message = Message(text=data['text'], id=current_user.id)
+    print(data)
+    new_message = Message(content=data['messagetext'], user_id=data['user'])
     db.session.add(new_message)
     db.session.commit()
 
-    return jsonify({'message' : "Todo created!"})
+    return jsonify({'message' : "message created!"}), 200
 
 
 @app.route('/message', methods=['GET'])
@@ -179,8 +189,6 @@ def get_one_message(current_user, id):
     message_data['text'] = message.text
 
     return jsonify(message_data)
-
-
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<string:path>")

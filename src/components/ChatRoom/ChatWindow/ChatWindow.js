@@ -4,7 +4,7 @@ import ChatTitle from "./ChatWindow_components/ChatTitle/ChatTitle";
 import ChatBody from "./ChatWindow_components/ChatBody/ChatBody";
 import ChatInput from "./ChatWindow_components/ChatInput/ChatInput";
 
-const ChatWindow = () => {
+const ChatWindow = ({ userId }) => {
     return (
         <Container className="chatwindow-container">
             <Card>
@@ -14,7 +14,7 @@ const ChatWindow = () => {
                     </Card.Header>
                     <Card.Text className="chat-body">
                         <ChatBody />
-                        <ChatInput />
+                        <ChatInput userId={userId} />
                     </Card.Text>
                 </Card.Body>
             </Card>
