@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_restful import Api
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, send, emit
 from functools import wraps
 import os
 import psycopg2
@@ -13,6 +14,7 @@ import datetime
 app = Flask(__name__, static_folder="./build", static_url_path="/")
 cors = CORS(app)
 api = Api(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 load_dotenv()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
@@ -42,36 +44,14 @@ class User(db.Model):
     created_date = db.Column(db.DateTime, server_default=db.func.now())
     messages = db.relationship('Message', backref='user')
 
-
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     content = db.Column(db.Text)
     created_date = db.Column(db.DateTime, server_default=db.func.now())
 
-with app.app_context():
-    db.create_all()
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-
-        if not token:
-            return jsonify({'message' : 'Token is missing!'}), 403
-
-        try: 
-            data = jwt.decode(token, app.config['SECRET_KEY'])
-            current_user = User.query.filter_by(id=data['id']).first()
-        except:
-            return jsonify({'message' : 'Token is invalid!'}), 403
-
-        return f(current_user, *args, **kwargs)
-
-    return decorated
+# with app.app_context():
+#     db.create_all()
 
 
 @app.route('/user/<id>', methods=['GET'])
@@ -93,14 +73,15 @@ def create_user():
     hashed_password = generate_password_hash(data['userPassword'], method='sha256')
     new_user = User(username=data['username'], password=hashed_password)
     username_taken = db.session.query(User).filter_by(username=data['username']).scalar() is not None
-    # if username_taken == True:
-    #     print(username_taken)
-    # else:
-    #     print("False")
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message' : 'User Created Successfully'}),200
-
+    if username_taken == None:
+        print(username_taken)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message' : 'User Created Successfully'}),200
+    else:
+        print("False")
+        return jsonify({'message' : "Username already taken"}), 401
+    
 @app.route('/app/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -125,13 +106,9 @@ def login():
     return make_response('Incomplete login information', 403, {'WWW-Authenticate' : 'Basic realm="Login required'}) 
 
 @app.route('/user', methods=['GET'])
-@token_required
 def get_all_users():
-
     users = User.query.all()
-
     output = []
-
     for user in users:
         user_data = {}
         user_data['id'] = user.id
@@ -140,9 +117,7 @@ def get_all_users():
 
     return jsonify({'users' : output})
 
-
 @app.route('/app/message', methods=['POST'])
-# @token_required
 def create_message():
 
     jwt = request.headers.get('Authorization')
@@ -159,7 +134,6 @@ def create_message():
 
 
 @app.route('/message', methods=['GET'])
-@token_required
 def get_all_messages(current_user):
     messages = Message.query.filter_by(id=current_user.id).all()
 
@@ -174,9 +148,7 @@ def get_all_messages(current_user):
 
     return jsonify({'messages' : output})
 
-
 @app.route('/message/<id>', methods=['GET'])
-@token_required
 def get_one_message(current_user, id):
     message = Message.query.filter_by(id=id, user_id=current_user.user_id).first()
 
@@ -199,4 +171,4 @@ def index(path):
         return app.send_static_file("index.html")
 
 if __name__ == "__main__":
-    app.run(port=5001, debug=True)
+    socketio.run(app, host='localhost', port=5001, debug=True)
