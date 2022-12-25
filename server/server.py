@@ -73,13 +73,13 @@ def create_user():
     hashed_password = generate_password_hash(data['userPassword'], method='sha256')
     new_user = User(username=data['username'], password=hashed_password)
     username_taken = db.session.query(User).filter_by(username=data['username']).scalar() is not None
-    if username_taken == None:
+    print(username_taken)
+    if username_taken == False:
         print(username_taken)
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message' : 'User Created Successfully'}),200
     else:
-        print("False")
         return jsonify({'message' : "Username already taken"}), 401
     
 @app.route('/app/login', methods=['POST'])
@@ -119,17 +119,14 @@ def get_all_users():
 
 @app.route('/app/message', methods=['POST'])
 def create_message():
-
     jwt = request.headers.get('Authorization')
     print(jwt)
     # Check if jwt is valid
     data = request.get_json()
-
-    print(data)
     new_message = Message(content=data['messagetext'], user_id=data['user'])
     db.session.add(new_message)
     db.session.commit()
-
+    socketio.emit('message', data)
     return jsonify({'message' : "message created!"}), 200
 
 
